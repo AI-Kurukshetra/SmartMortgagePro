@@ -48,7 +48,7 @@
 |---|---|---|---|---|
 | F-AUTH-01 | Login / Signup Flow | MVP | ✅ DONE | §6.1 |
 | F-AUTH-02 | OAuth (Google) | MVP | ✅ DONE | §6.1 |
-| F-AUTH-03 | Password Reset | MVP | 🔲 TODO | §6.1 |
+| F-AUTH-03 | Password Reset | MVP | ✅ DONE | §6.1 |
 | F-LOAN-01 | Digital Loan Application Portal | MVP | 🔲 TODO | F-01 |
 | F-LOAN-02 | Save & Resume Application | MVP | 🔲 TODO | F-01 |
 | F-DOC-01 | Document Upload Portal | MVP | 🔲 TODO | F-02 |
@@ -488,12 +488,12 @@ test.describe('F-AUTH-03: Password Reset', () => {
 ```
 
 ## Acceptance Criteria
-- [ ] Forgot password page accessible from login page link
-- [ ] Email validation before submission
-- [ ] Success state shown after email sent
-- [ ] Reset password page validates new password ≥ 8 chars
-- [ ] Passwords match validation on reset form
-- [ ] After reset, user redirected to login with success message
+- [x] Forgot password page accessible from login page link
+- [x] Email validation before submission
+- [x] Success state shown after email sent
+- [x] Reset password page validates new password ≥ 8 chars
+- [x] Passwords match validation on reset form
+- [x] After reset, user redirected to login with success message
 
 ---
 

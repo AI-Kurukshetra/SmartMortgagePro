@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { googleOAuthAction, loginAction } from "@/actions/auth";
 import { GoogleOAuthButton } from "@/components/auth/google-oauth-button";
@@ -11,6 +12,7 @@ import { LoginSchema, type LoginInput } from "@/lib/validations/auth";
 type LoginErrors = Partial<Record<keyof LoginInput | "_form", string[]>>;
 
 export function LoginForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,6 +20,7 @@ export function LoginForm() {
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isPending, startTransition] = useTransition();
   const oauthCallbackFailed = searchParams.get("error") === "oauth_callback_failed";
+  const passwordResetSuccess = searchParams.get("reset") === "success";
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,8 +39,13 @@ export function LoginForm() {
         formData.set("password", parsed.data.password);
 
         const result = await loginAction(formData);
-        if (result?.error) {
+        if ("error" in result && result.error) {
           setErrors(result.error as LoginErrors);
+          return;
+        }
+        if ("ok" in result && result.ok && result.redirectTo) {
+          router.push(result.redirectTo);
+          router.refresh();
         }
       })();
     });
@@ -114,6 +122,11 @@ export function LoginForm() {
       {!errors._form?.[0] && oauthCallbackFailed ? (
         <p className="text-sm text-red-600">
           Google sign-in failed. Please try again.
+        </p>
+      ) : null}
+      {passwordResetSuccess ? (
+        <p className="text-sm text-emerald-700">
+          Password reset successful. Sign in with your new password.
         </p>
       ) : null}
 

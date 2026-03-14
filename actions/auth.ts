@@ -1,13 +1,21 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
-import { LoginSchema, SignupSchema } from "@/lib/validations/auth";
+import {
+  ForgotPasswordSchema,
+  LoginSchema,
+  ResetPasswordSchema,
+  SignupSchema,
+} from "@/lib/validations/auth";
 
 type AuthFieldErrors = Record<string, string[] | undefined>;
+type AuthActionResult =
+  | { ok: true; redirectTo?: string; url?: string }
+  | { error: AuthFieldErrors }
+  | { error: string };
 
-export async function loginAction(formData: FormData) {
+export async function loginAction(formData: FormData): Promise<AuthActionResult> {
   const raw = Object.fromEntries(formData);
   const parsed = LoginSchema.safeParse(raw);
   if (!parsed.success) {
@@ -22,10 +30,10 @@ export async function loginAction(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  return { ok: true, redirectTo: "/dashboard" };
 }
 
-export async function signupAction(formData: FormData) {
+export async function signupAction(formData: FormData): Promise<AuthActionResult> {
   const raw = Object.fromEntries(formData);
   const parsed = SignupSchema.safeParse(raw);
   if (!parsed.success) {
@@ -46,16 +54,19 @@ export async function signupAction(formData: FormData) {
     return { error: { _form: [error.message] } as AuthFieldErrors };
   }
 
-  redirect("/auth/verify-email");
+  return { ok: true, redirectTo: "/auth/verify-email" };
 }
 
-export async function signOutAction() {
+export async function signOutAction(): Promise<{ ok: true; redirectTo: string } | { error: string }> {
   const supabase = await createServerClient();
-  await supabase.auth.signOut();
-  redirect("/login");
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    return { error: error.message };
+  }
+  return { ok: true, redirectTo: "/login" };
 }
 
-export async function googleOAuthAction() {
+export async function googleOAuthAction(): Promise<AuthActionResult> {
   const supabase = await createServerClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -69,8 +80,48 @@ export async function googleOAuthAction() {
   }
 
   if (data.url) {
-    redirect(data.url);
+    return { ok: true, url: data.url };
   }
 
   return { error: "Google OAuth initialization failed." };
 }
+
+export async function resetPasswordAction(formData: FormData): Promise<AuthActionResult> {
+  const raw = Object.fromEntries(formData);
+  const parsed = ForgotPasswordSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { error: parsed.error.flatten().fieldErrors as AuthFieldErrors };
+  }
+
+  const supabase = await createServerClient();
+  await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001"}/reset-password`,
+  });
+
+  // Always return a success state to avoid account enumeration.
+  return { ok: true };
+}
+
+export async function updatePasswordAction(formData: FormData): Promise<AuthActionResult> {
+  const raw = Object.fromEntries(formData);
+  const parsed = ResetPasswordSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { error: parsed.error.flatten().fieldErrors as AuthFieldErrors };
+  }
+
+  const supabase = await createServerClient();
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.password,
+  });
+
+  if (error) {
+    return { error: { _form: [error.message] } as AuthFieldErrors };
+  }
+
+  await supabase.auth.signOut();
+  revalidatePath("/", "layout");
+  return { ok: true, redirectTo: "/login?reset=success" };
+}
+
+export const resetPassword = resetPasswordAction;
+export const updatePassword = updatePasswordAction;

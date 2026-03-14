@@ -7,6 +7,7 @@ const PUBLIC_ROUTES = [
   "/auth/callback",
   "/auth/verify-email",
   "/forgot-password",
+  "/reset-password",
 ];
 
 export async function middleware(request: NextRequest) {
@@ -42,7 +43,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (user && isPublic && !pathName.startsWith("/auth/callback")) {
+  if (
+    user &&
+    isPublic &&
+    !pathName.startsWith("/auth/callback") &&
+    !pathName.startsWith("/reset-password")
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

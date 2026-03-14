@@ -1,12 +1,12 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient as createSSRClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { env } from "@/env";
 import type { Database } from "@/types/database.types";
 
-export async function createSupabaseServerClient() {
+export async function createServerClient() {
   const cookieStore = await cookies();
 
-  return createServerClient<Database>(
+  return createSSRClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
@@ -27,3 +27,5 @@ export async function createSupabaseServerClient() {
     },
   );
 }
+
+export const createSupabaseServerClient = createServerClient;

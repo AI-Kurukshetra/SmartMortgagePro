@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { env } from "@/env";
 import type { Database } from "@/types/database.types";
 
-export function createSupabaseAdminClient() {
+export function createAdminClient() {
   if (!env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error(
       "SUPABASE_SERVICE_ROLE_KEY is missing. Set it in your environment before calling admin operations.",
@@ -22,3 +22,5 @@ export function createSupabaseAdminClient() {
     },
   );
 }
+
+export const createSupabaseAdminClient = createAdminClient;

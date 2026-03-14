@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { MvpMount } from "@/components/mvp/mvp-mount";
 
-export default function Home() {
-  redirect("/dashboard");
+export default function HomePage() {
+  return <MvpMount />;
 }

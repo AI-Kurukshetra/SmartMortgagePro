@@ -13,6 +13,11 @@ function parseNonEmpty(value: string | undefined, fallback: string) {
   return parsed.success ? parsed.data : fallback;
 }
 
+function parseOptionalNonEmpty(value: string | undefined) {
+  const parsed = nonEmptySchema.safeParse(value);
+  return parsed.success ? parsed.data : undefined;
+}
+
 export const env = {
   NEXT_PUBLIC_APP_URL: parseUrl(
     process.env.NEXT_PUBLIC_APP_URL,
@@ -28,4 +33,11 @@ export const env = {
   ),
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   SUPABASE_DB_URL: process.env.SUPABASE_DB_URL,
+  CLOUDINARY_CLOUD_NAME: parseOptionalNonEmpty(process.env.CLOUDINARY_CLOUD_NAME),
+  CLOUDINARY_API_KEY: parseOptionalNonEmpty(process.env.CLOUDINARY_API_KEY),
+  CLOUDINARY_API_SECRET: parseOptionalNonEmpty(process.env.CLOUDINARY_API_SECRET),
+  CLOUDINARY_UPLOAD_FOLDER: parseNonEmpty(
+    process.env.CLOUDINARY_UPLOAD_FOLDER,
+    "smartmortgagepro/documents",
+  ),
 } as const;

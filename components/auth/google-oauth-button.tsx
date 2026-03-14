@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 
 type GoogleOAuthButtonProps = {
-  action: () => Promise<{ error?: string } | void>;
+  action: () => Promise<{ ok: true; url?: string } | { error: string } | { error: { _form?: string[] } }>;
   onError?: (message: string) => void;
 };
 
@@ -14,8 +14,16 @@ export function GoogleOAuthButton({ action, onError }: GoogleOAuthButtonProps) {
     startTransition(() => {
       void (async () => {
         const result = await action();
-        if (result && "error" in result && result.error) {
-          onError?.(result.error);
+        if ("error" in result && result.error) {
+          if (typeof result.error === "string") {
+            onError?.(result.error);
+            return;
+          }
+          onError?.(result.error._form?.[0] ?? "OAuth sign-in failed.");
+          return;
+        }
+        if ("ok" in result && result.ok && result.url) {
+          window.location.assign(result.url);
         }
       })();
     });

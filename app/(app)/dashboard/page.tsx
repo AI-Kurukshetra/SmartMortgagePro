@@ -1,21 +1,14 @@
-import { DashboardClient } from "@/components/dashboard/dashboard-client";
-import { listLoans } from "@/lib/services/loans";
-import type { LoanRecord } from "@/lib/services/loans";
+import { redirect } from "next/navigation";
+import { getAuthenticatedViewer } from "@/lib/auth/session";
+import { PipelinePage } from "@/components/pipeline/pipeline-page";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  let loans: LoanRecord[] = [];
-  let bootstrapError: string | undefined;
-
-  try {
-    loans = await listLoans();
-  } catch (error) {
-    bootstrapError =
-      error instanceof Error
-        ? error.message
-        : "Dashboard failed to load loan data.";
+  const viewer = await getAuthenticatedViewer();
+  if (viewer?.role === "borrower") {
+    redirect("/my-loans");
   }
 
-  return <DashboardClient initialLoans={loans} bootstrapError={bootstrapError} />;
+  return <PipelinePage />;
 }

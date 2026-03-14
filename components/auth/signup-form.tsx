@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { signupAction } from "@/actions/auth";
 import { SignupSchema, type SignupInput } from "@/lib/validations/auth";
 
 type SignupErrors = Partial<Record<keyof SignupInput | "_form", string[]>>;
 
 export function SignupForm() {
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,8 +45,12 @@ export function SignupForm() {
         formData.set("confirm_password", parsed.data.confirm_password);
 
         const result = await signupAction(formData);
-        if (result?.error) {
+        if ("error" in result && result.error) {
           setErrors(result.error as SignupErrors);
+          return;
+        }
+        if ("ok" in result && result.ok && result.redirectTo) {
+          router.push(result.redirectTo);
         }
       })();
     });

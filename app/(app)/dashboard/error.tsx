@@ -11,7 +11,7 @@ export default function DashboardError({
 }) {
   return (
     <div className="rounded-xl border border-rose-200 bg-rose-50 p-6">
-      <h2 className="text-lg font-semibold text-rose-800">Dashboard failed to load</h2>
+      <h2 className="text-lg font-semibold text-rose-800">Pipeline failed to load</h2>
       <p className="mt-2 text-sm text-rose-700">{error.message}</p>
       <Button className="mt-4" onClick={reset}>
         Retry

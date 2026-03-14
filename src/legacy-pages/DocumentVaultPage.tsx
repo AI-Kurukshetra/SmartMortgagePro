@@ -33,7 +33,7 @@ type VaultTab = "vault" | "audit";
 export default function DocumentVaultPage() {
   const navigate = useNavigate();
   const { pushToast } = useToast();
-  const submission = useMemo(() => mockLoanService.getSubmissionSync(), []);
+  const [submission, setSubmission] = useState(() => mockLoanService.getSubmissionSync());
   const loanId = submission?.loanId ?? "";
   const loanType = submission?.application.loanType ?? "purchase";
   const { viewMode, setViewMode } = useDocumentStore();

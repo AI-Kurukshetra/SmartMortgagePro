@@ -729,9 +729,23 @@ export function ReviewSubmitStep({ onEditStep }: { onEditStep: (step: number) =>
                 <Typography variant="body2" sx={{ color: "#64748B" }}>
                   {item.summary || "Needs review"}
                 </Typography>
-                <Button size="small" onClick={() => onEditStep(item.step)}>
+                <Typography
+                  variant="button"
+                  component="span"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditStep(item.step);
+                  }}
+                  sx={{
+                    cursor: "pointer",
+                    color: "primary.main",
+                    fontWeight: 700,
+                    fontSize: "0.8125rem",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
                   Edit
-                </Button>
+                </Typography>
               </Stack>
             </Stack>
           </AccordionSummary>

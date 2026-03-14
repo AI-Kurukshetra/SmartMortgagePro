@@ -27,11 +27,6 @@ const staffNavItems = [
     label: "Communications",
     icon: MessagesSquare,
   },
-  {
-    href: "/feature-center",
-    label: "Feature Center",
-    icon: TableProperties,
-  },
 ];
 
 const roleBadgeTone: Record<ProfileRole, string> = {
@@ -61,11 +56,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           href: "/my-loans",
           label: "My Applications",
           icon: LayoutDashboard,
-        },
-        {
-          href: "/feature-center",
-          label: "Feature Center",
-          icon: TableProperties,
         },
       ]
     : staffNavItems;

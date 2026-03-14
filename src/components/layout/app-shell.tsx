@@ -86,7 +86,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               pb: { xs: 9, md: 0 },
             }}
           >
-            <Box sx={{ display: { xs: "none", md: "block" } }}>
+            <Box aria-label="Sidebar Section" sx={{ display: { xs: "none", md: "block" }, height: "100%" }}>
               <Sidebar />
             </Box>
             <Box sx={{ p: { xs: 2, md: 4 } }}>

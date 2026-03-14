@@ -15,10 +15,14 @@ export function Sidebar() {
     <Box
       sx={{
         width: { xs: "100%", md: 288 },
+        minHeight: { md: "100vh" },
+        height: "100%",
         bgcolor: "#0A1628",
         color: "white",
         p: 3,
         borderRight: { md: "1px solid rgba(255,255,255,0.08)" },
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Typography variant="overline" sx={{ color: "#7DD3FC", letterSpacing: "0.16em" }}>

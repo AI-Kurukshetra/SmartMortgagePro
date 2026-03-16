@@ -29,8 +29,20 @@ export async function loginAction(formData: FormData): Promise<AuthActionResult>
     return { error: { _form: [error.message] } as AuthFieldErrors };
   }
 
+  const { data: { user } } = await supabase.auth.getUser();
+  let redirectTo = "/dashboard";
+
+  if (user?.id) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    redirectTo = profile?.role === "borrower" ? "/my-loans" : "/dashboard";
+  }
+
   revalidatePath("/", "layout");
-  return { ok: true, redirectTo: "/dashboard" };
+  return { ok: true, redirectTo };
 }
 
 export async function signupAction(formData: FormData): Promise<AuthActionResult> {
@@ -45,7 +57,7 @@ export async function signupAction(formData: FormData): Promise<AuthActionResult
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      data: { full_name: parsed.data.full_name },
+      data: { full_name: parsed.data.full_name, role: parsed.data.role },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001"}/auth/callback`,
     },
   });

@@ -11,6 +11,7 @@ export const SignupSchema = z
     email: z.string().email("Enter a valid email"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirm_password: z.string(),
+    role: z.enum(["borrower", "loan_officer", "processor", "underwriter"]),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords don't match",

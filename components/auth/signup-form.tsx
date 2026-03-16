@@ -15,6 +15,7 @@ export function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState<"borrower" | "loan_officer" | "processor" | "underwriter">("borrower");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<SignupErrors>({});
@@ -29,6 +30,7 @@ export function SignupForm() {
       email,
       password,
       confirm_password: confirmPassword,
+      role,
     });
 
     if (!parsed.success) {
@@ -43,6 +45,7 @@ export function SignupForm() {
         formData.set("email", parsed.data.email);
         formData.set("password", parsed.data.password);
         formData.set("confirm_password", parsed.data.confirm_password);
+        formData.set("role", parsed.data.role);
 
         const result = await signupAction(formData);
         if ("error" in result && result.error) {
@@ -82,6 +85,25 @@ export function SignupForm() {
         {errors.full_name?.[0] ? (
           <p className="text-sm text-red-600">{errors.full_name[0]}</p>
         ) : null}
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="role" className="text-sm font-medium text-gray-700">
+          I am a <span className="text-red-500">*</span>
+        </label>
+        <select
+          id="role"
+          name="role"
+          value={role}
+          onChange={(event) => setRole(event.target.value as typeof role)}
+          className="h-12 w-full rounded-xl border-0 bg-[#F5F6FA] px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B4FE4] appearance-none"
+        >
+          <option value="borrower">Borrower — applying for a mortgage</option>
+          <option value="loan_officer">Loan Officer</option>
+          <option value="processor">Processor</option>
+          <option value="underwriter">Underwriter</option>
+        </select>
+        {errors.role?.[0] ? <p className="text-sm text-red-600">{errors.role[0]}</p> : null}
       </div>
 
       <div className="space-y-2">
